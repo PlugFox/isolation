@@ -3,7 +3,6 @@ import 'dart:isolate';
 
 import 'package:isolation/src/channel.dart';
 import 'package:isolation/src/connection.dart';
-import 'package:isolation/src/delegating_event_sink.dart';
 import 'package:isolation/src/exception.dart';
 import 'package:isolation/src/logging.dart';
 import 'package:meta/meta.dart';
@@ -38,9 +37,6 @@ class SlaveConnection<In, Out> extends Connection<In, Out> {
 
   /// Combine data and exception from master isolate
   final EventSink<Out> _eventsFromMaster;
-
-  /// Sink for data and exception
-  EventSink<In> get sink => DelegatingEventSink<In>(this);
 
   StreamSubscription<Out>? _dataSubscription;
   StreamSubscription<IsolateException>? _exceptionSubscription;

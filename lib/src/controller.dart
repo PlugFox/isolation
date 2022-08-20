@@ -40,8 +40,7 @@ abstract class IsolateController<Input, Output> implements EventSink<Input> {
   /// -> kill isolate -> close output controller
   ///
   /// Force:
-  /// close() -> isClosed = true -> close input sink
-  /// -> kill isolate -> close output controller
+  /// close() -> isClosed = true -> close input sink -> kill isolate -> close output controller
   @override
   Future<void> close({bool force = false});
 }
