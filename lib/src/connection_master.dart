@@ -30,7 +30,7 @@ class MasterConnection<In, Out> extends Connection<In, Out> {
               IsolateChannel<IsolateException, IsolateException>(),
           serviceChannel: IsolateChannel<Object?, Object?>(),
         ) {
-    fine('MasterConnection created');
+    fine('$_debugName created');
   }
 
   /// Slave isolation
@@ -56,10 +56,10 @@ class MasterConnection<In, Out> extends Connection<In, Out> {
 
   @override
   Future<void> connect() async {
-    assert(status.isNotConnected, 'Connection has already been established.');
+    assert(status.isNotConnected, '$_debugName has already been established.');
     if (!status.isNotConnected) return;
     await super.connect();
-    fine('MasterConnection starts connection');
+    fine('$_debugName starts connection');
     // Payload for slave isolate.
     final payload = IsolatePayload<In, Out>(
       dataPort: super.dataChannel.receivePort.sendPort,
@@ -82,21 +82,21 @@ class MasterConnection<In, Out> extends Connection<In, Out> {
   }
 
   Future<void> _registrateListeners() {
-    fine('MasterConnection start listening on data channel');
+    fine('$_debugName start listening on data channel');
     _dataSubscription = dataChannel.receivePort.cast<Out>().listen(
       _eventsFromSlave.add,
       onError: (Object error, StackTrace stackTrace) {
         warning(
           error,
           stackTrace,
-          'MasterConnection exception on data channel listener',
+          '$_debugName exception on data channel listener',
         );
         _eventsFromSlave.addError(error, stackTrace);
       },
       cancelOnError: false,
     );
 
-    fine('MasterConnection start listening on exception channel');
+    fine('$_debugName start listening on exception channel');
     _exceptionSubscription =
         exceptionChannel.receivePort.cast<IsolateException>().listen(
       (msg) => _eventsFromSlave.addError(msg.exception, msg.stackTrace),
@@ -104,14 +104,14 @@ class MasterConnection<In, Out> extends Connection<In, Out> {
         warning(
           error,
           stackTrace,
-          'MasterConnection exception on exception channel listener',
+          '$_debugName exception on exception channel listener',
         );
         _eventsFromSlave.addError(error, stackTrace);
       },
       cancelOnError: false,
     );
 
-    fine('MasterConnection start listening on service channel');
+    fine('$_debugName start listening on service channel');
     final completer = Completer<void>();
     _serviceSubscription = serviceChannel.receivePort.cast<Object?>().listen(
       (msg) {
@@ -122,7 +122,7 @@ class MasterConnection<In, Out> extends Connection<In, Out> {
             );
             throw UnsupportedError('Unexpected message');
           }
-          fine('MasterConnection recive send ports from SlaveConnection');
+          fine('$_debugName recive send ports from SlaveConnection');
           super.dataChannel.setPort(msg[0]);
           super.exceptionChannel.setPort(msg[1]);
           super.serviceChannel.setPort(msg[2]);
@@ -136,9 +136,10 @@ class MasterConnection<In, Out> extends Connection<In, Out> {
   @override
   Future<void> close({bool force = false}) async {
     try {
-      config('MasterConnection is closing');
+      config('$_debugName is closing');
       addServiceMessage(null);
       if (!force) {
+        // ignore: todo
         // TODO: await response from slave isolate.
         //_slaveIsolate.addOnExitListener(responsePort)
       }
@@ -148,7 +149,7 @@ class MasterConnection<In, Out> extends Connection<In, Out> {
       await _serviceSubscription?.cancel();
     } finally {
       _slaveIsolate?.kill();
-      config('MasterConnection is closed');
+      config('$_debugName is closed');
     }
   }
 }

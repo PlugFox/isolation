@@ -1,9 +1,14 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 
 import 'package:isolation/isolation.dart';
 
 void main() => Future<void>(() async {
-      final controller = IsolateController<int, String>(_callback, lazy: true)
+      final controller = IsolateController<int, String>(
+        _callback,
+        lazy: true,
+      )
         ..add(2)
         ..add(4)
         ..add(8);

@@ -75,6 +75,7 @@ abstract class Connection<In, Out> implements EventSink<In> {
     if (_status.isClosed) return null;
     _status = ConnectionStatus.disconnected;
     if (!force) {
+      // ignore: todo
       // TODO: await graceful closing
       // Matiunin Mikhail <plugfox@gmail.com>, 07 August 2022
       //throw UnimplementedError('Connection.close(force: false)');

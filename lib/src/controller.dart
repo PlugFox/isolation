@@ -33,14 +33,6 @@ abstract class IsolateController<Input, Output> implements EventSink<Input> {
   /// Calling this method more than once is allowed, but does nothing.
   ///
   /// Neither [add] nor [addError] must be called after this method.
-  ///
-  /// Graceful:
-  /// close() -> isClosed = true -> close input sink
-  /// -> send close service message -> await close service message
-  /// -> kill isolate -> close output controller
-  ///
-  /// Force:
-  /// close() -> isClosed = true -> close input sink -> kill isolate -> close output controller
   @override
   Future<void> close({bool force = false});
 }
