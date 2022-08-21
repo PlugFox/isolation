@@ -8,11 +8,11 @@ void main() => group(
       () {
         late IsolateController<String, String> controller;
 
-        setUp(() {
+        setUpAll(() {
           controller = IsolateController<String, String>(_echo);
         });
 
-        tearDown(() {
+        tearDownAll(() {
           controller.close();
         });
 
