@@ -51,6 +51,7 @@ class SlaveConnection<In, Out> extends Connection<In, Out> {
     if (!status.isNotConnected) return;
     fine('$_debugName connection is started');
     await super.connect();
+    _registrateListeners();
     addServiceMessage(
       <SendPort>[
         super.dataChannel.receivePort.sendPort,
@@ -58,7 +59,6 @@ class SlaveConnection<In, Out> extends Connection<In, Out> {
         super.serviceChannel.receivePort.sendPort,
       ],
     );
-    _registrateListeners();
   }
 
   void _registrateListeners() {
