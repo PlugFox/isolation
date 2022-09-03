@@ -8,6 +8,53 @@
 
 ---
 
+# Overview
+
+The package simplifies the creation and interaction between isolates.
+It encapsulates the entire boilerplate, leaving the developer with only transport with an API that looks like two stream controllers.
+
+The package also helps to preserve typing and pass exceptions between isolates.
+
+# Usage
+
+## JSON parser
+
+```dart
+import 'dart:async';
+import 'dart:convert' show jsonDecode;
+
+import 'package:isolation/isolation.dart';
+
+typedef JsonMap = Map<String, Object?>;
+
+/// Main isolate
+void main() => Future<void>(() async {
+      // Create a new isolate controller
+      final controller = IsolateController<String, JsonMap>(
+        _parser,    // Isolate function
+        lazy: true, // The isolate will not be created until the first message
+      )
+       // Add few messages to the isolate:
+       ..add('{}')
+       ..add('{"field": 123}')
+       ..add('{"fizz": "buzz", "value": 2, "undefined": null}');
+      // Listen messages from slave isolate
+      await controller.stream.take(3).forEach(print);
+      // Gracefully closing connection and finally kill slave isolate
+      await controller.close(force: false);
+    });
+
+/// Slave isolate for parsing JSON, where you can subscribe to the stream
+/// from the main isolate and send the result back through the controller.
+Future<void> _parser(IsolateController<JsonMap, String> controller) =>
+    controller.stream.forEach((json) {
+      final result = jsonDecode(json) as Object?;
+      (result is JsonMap)
+          ? controller.add(result)
+          : controller.addError(const FormatException('Invalid JSON'));
+    });
+```
+
 ## Installation
 
 Add the following to your `pubspec.yaml` file to be able to do code generation:
