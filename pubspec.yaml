@@ -1,6 +1,8 @@
 name: isolation
-description: Isolate helper for flutter and dart.
-version: 0.0.1-dev
+description: |
+  The library allows you to simplify the creation and interaction of isolates for dart and flutter.
+  The interaction between isolates is an interface similar to stream controllers.
+version: 0.0.2-dev
 repository: https://github.com/PlugFox/isolation
 issue_tracker: https://github.com/PlugFox/isolation/issues
 homepage: https://github.com/PlugFox/isolation

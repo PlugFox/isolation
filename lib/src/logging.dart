@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:developer' as developer;
+
+import 'package:isolation/src/constant.dart';
 
 /// Tracing information
 final void Function(Object? message) fine = _logAll('FINE', 500);
@@ -23,7 +26,7 @@ void Function(
   String? reason,
 ]) _logAll(String prefix, int level) =>
     (Object? message, [StackTrace? stackTrace, String? reason]) {
-      //if (Zone.current[kLogEnabled] != true) return;
+      if (Zone.current[kLogEnabled] != true) return;
       developer.log(
         '[$prefix] ${reason ?? message}',
         level: level,

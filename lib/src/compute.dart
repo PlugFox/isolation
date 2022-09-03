@@ -11,6 +11,7 @@ import 'package:meta/meta.dart';
 typedef ComputeCallback<Q, R> = FutureOr<R> Function(Q message);
 
 /// The dart:io implementation of [compute].
+@experimental
 Future<R> compute<Q, R>(
   ComputeCallback<Q, R> callback,
   Q message, {
@@ -31,8 +32,8 @@ Future<R> compute<Q, R>(
     Timeline.finishSync();
   }
 
-  final completer = Completer<dynamic>();
-  port.handler = (dynamic msg) {
+  final completer = Completer<Object?>();
+  port.handler = (Object? msg) {
     timeEndAndCleanup();
     completer.complete(msg);
   };
@@ -56,13 +57,13 @@ Future<R> compute<Q, R>(
     rethrow;
   }
 
-  final dynamic response = await completer.future;
+  final response = await completer.future;
   if (response == null) {
     throw RemoteError('Isolate exited without result or error.', '');
   }
 
   assert(response is List<Object?>, 'Unexpected response type: $response');
-  response as List<dynamic>;
+  response as List<Object?>;
 
   final type = response.length;
   assert(1 <= type && type <= 3, 'Unexpected response type: $type');
@@ -76,8 +77,8 @@ Future<R> compute<Q, R>(
     case 2:
       await Future<Never>.error(
         RemoteError(
-          response[0] as String,
-          response[1] as String,
+          response[0]! as String,
+          response[1]! as String,
         ),
       );
 
@@ -90,8 +91,8 @@ Future<R> compute<Q, R>(
       );
 
       await Future<Never>.error(
-        response[0] as Object,
-        response[1] as StackTrace,
+        response[0]!,
+        response[1]! as StackTrace,
       );
   }
 }
@@ -128,7 +129,7 @@ class _IsolateConfiguration<Q, R> {
 /// Also use the helpers [_buildSuccessResponse] and [_buildErrorResponse] to
 /// build the response
 Future<void> _spawn<Q, R>(_IsolateConfiguration<Q, R> configuration) async {
-  late final List<dynamic> computationResult;
+  late final List<Object?> computationResult;
 
   try {
     computationResult =
@@ -152,7 +153,7 @@ List<R> _buildSuccessResponse<R>(R result) => List<R>.filled(1, result);
 /// We wrap a caught error in a 3 element [List]. Where the last element is
 /// always null. We do this so we have a way to know if an error was one we
 /// caught or one thrown by the library code.
-List<dynamic> _buildErrorResponse(Object error, StackTrace stack) =>
-    List<dynamic>.filled(3, null)
+List<Object?> _buildErrorResponse(Object error, StackTrace stack) =>
+    List<Object?>.filled(3, null)
       ..[0] = error
       ..[1] = stack;
