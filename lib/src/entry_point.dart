@@ -11,11 +11,11 @@ import 'package:meta/meta.dart';
 /// Entry point for the isolate.
 @internal
 void isolateEntryPoint(IsolatePayload payload) {
-  Connection? conenction;
+  Connection? connection;
   runZonedGuarded<void>(
     () async {
       info('Execute entry payload in slave isolate');
-      conenction = await payload();
+      connection = await payload();
     },
     (error, stackTrace) {
       severe(error, stackTrace, 'Root exception in slave isolate is catched');
@@ -24,7 +24,7 @@ void isolateEntryPoint(IsolatePayload payload) {
       );
       if (payload.errorsAreFatal) {
         info('Closing slave isolate after fatal error');
-        conenction?.close();
+        connection?.close();
         Isolate.current.kill();
       }
     },
